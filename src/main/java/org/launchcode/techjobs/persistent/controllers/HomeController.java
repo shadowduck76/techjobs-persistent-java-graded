@@ -13,6 +13,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class HomeController {
 
     @Autowired
     private JobRepository jobRepository;
+
 
     @RequestMapping("")
     public String index(Model model) {
@@ -57,15 +59,17 @@ public class HomeController {
             model.addAttribute("title", "Add Job");
             return "add";
         }
+        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        newJob.setSkills(skillObjs);
         Optional<Employer> employer = employerRepository.findById(employerId);
         if(employer.isEmpty()){
             model.addAttribute("title", "Add Job");
             return "add";
         } else {
-            newJob.setEmployer(employer.get());
+            Employer myEmployer = employer.get();
+            newJob.setEmployer(myEmployer);
         }
-        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
-        newJob.setSkills(skillObjs);
+
         jobRepository.save(newJob);
         return "redirect:";
     }
